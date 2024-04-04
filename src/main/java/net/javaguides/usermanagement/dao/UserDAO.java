@@ -11,7 +11,7 @@ import java.util.List;
 import net.javaguides.usermanagement.modal.User;
 
 public class UserDAO {
-	private String jdbcURL = "jdbc:mysql://localhost:3306/users?useSSL=false";
+	private String jdbcURL = "jdbc:mysql://localhost:3306/users";
 	private String jdbcUsername = "root";
 	private String jdbcPassword = "1620";
 
@@ -26,22 +26,16 @@ public class UserDAO {
 	public UserDAO() {
 	}
 
-	protected Connection getConnection() {
+	protected Connection getConnection() throws ClassNotFoundException, SQLException {
 		Connection connection = null;
-		try {
+		
 			Class.forName("com.mysql.jdbc.Driver");
 			connection = DriverManager.getConnection(jdbcURL, jdbcUsername, jdbcPassword);
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		
 		return connection;
 	}
 
-	public void insertUser(User user) throws SQLException {
+	public void insertUser(User user) throws SQLException, ClassNotFoundException {
 		System.out.println(INSERT_USERS_SQL);
 		// try-with-resource statement will auto close the connection.
 		try (Connection connection = getConnection();
@@ -56,7 +50,7 @@ public class UserDAO {
 		}
 	}
 
-	public User selectUser(int id) {
+	public User selectUser(int id) throws ClassNotFoundException {
 		User user = null;
 		// Step 1: Establishing a Connection
 		try (Connection connection = getConnection();
@@ -72,7 +66,7 @@ public class UserDAO {
 				String name = rs.getString("name");
 				String email = rs.getString("email");
 				String country = rs.getString("country");
-				user = new User(id,name,email,country);
+				user = new User(name, email, country);
 			}
 		} catch (SQLException e) {
 			printSQLException(e);
@@ -80,7 +74,7 @@ public class UserDAO {
 		return user;
 	}
 
-	public List<User> selectAllUsers() {
+	public List<User> selectAllUsers() throws ClassNotFoundException {
 
 		// using try-with-resources to avoid closing resources (boiler plate code)
 		List<User> users = new ArrayList<>();
@@ -107,7 +101,7 @@ public class UserDAO {
 		return users;
 	}
 
-	public boolean deleteUser(int id) throws SQLException {
+	public boolean deleteUser(int id) throws SQLException, ClassNotFoundException {
 		boolean rowDeleted;
 		try (Connection connection = getConnection();
 				PreparedStatement statement = connection.prepareStatement(DELETE_USERS_SQL);) {
@@ -117,7 +111,7 @@ public class UserDAO {
 		return rowDeleted;
 	}
 
-	public boolean updateUser(User user) throws SQLException {
+	public boolean updateUser(User user) throws SQLException, ClassNotFoundException {
 		boolean rowUpdated;
 		try (Connection connection = getConnection();
 				PreparedStatement statement = connection.prepareStatement(UPDATE_USERS_SQL);) {

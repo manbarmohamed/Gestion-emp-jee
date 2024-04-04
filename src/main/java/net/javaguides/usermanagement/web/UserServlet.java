@@ -56,11 +56,14 @@ public class UserServlet extends HttpServlet {
             }
         } catch (SQLException ex) {
             throw new ServletException(ex);
-        }
+        } catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
     }
 
     private void listUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
+            throws SQLException, IOException, ServletException, ClassNotFoundException {
         List<User> listUser = userDAO.selectAllUsers();
         request.setAttribute("listUser", listUser);
         RequestDispatcher dispatcher = request.getRequestDispatcher("/user-list.jsp");
@@ -74,8 +77,8 @@ public class UserServlet extends HttpServlet {
     }
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, ServletException, IOException {
-        try {
+            throws SQLException, ServletException, IOException, ClassNotFoundException {
+       
             int id = Integer.parseInt(request.getParameter("id"));
             User existingUser = userDAO.selectUser(id);
             if (existingUser != null) {
@@ -85,13 +88,11 @@ public class UserServlet extends HttpServlet {
             } else {
                 showErrorPage(request, response, "Utilisateur non trouvé");
             }
-        } catch (NumberFormatException e) {
-            showErrorPage(request, response, "Identifiant d'utilisateur invalide");
-        }
+        
     }
 
     private void insertUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException {
+            throws SQLException, IOException, ClassNotFoundException {
         String name = request.getParameter("name");
         String email = request.getParameter("email");
         String country = request.getParameter("country");
@@ -101,8 +102,8 @@ public class UserServlet extends HttpServlet {
     }
 
     private void updateUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
-        try {
+            throws SQLException, IOException, ServletException, ClassNotFoundException {
+        
             int id = Integer.parseInt(request.getParameter("id"));
             String name = request.getParameter("name");
             String email = request.getParameter("email");
@@ -111,20 +112,16 @@ public class UserServlet extends HttpServlet {
             User user = new User(id, name, email, country);
             userDAO.updateUser(user);
             response.sendRedirect("list");
-        } catch (NumberFormatException e) {
-            showErrorPage(request, response, "Identifiant d'utilisateur invalide");
-        }
+       
     }
 
     private void deleteUser(HttpServletRequest request, HttpServletResponse response)
-            throws SQLException, IOException, ServletException {
-        try {
+            throws SQLException, IOException, ServletException, ClassNotFoundException {
+      
             int id = Integer.parseInt(request.getParameter("id"));
             userDAO.deleteUser(id);
             response.sendRedirect("list");
-        } catch (NumberFormatException e) {
-            showErrorPage(request, response, "Identifiant d'utilisateur invalide");
-        }
+       
     }
 
     private void showErrorPage(HttpServletRequest request, HttpServletResponse response, String message)
